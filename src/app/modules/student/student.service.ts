@@ -1,22 +1,6 @@
 import { TStudent } from "./student.interface";
 import StudentModel from "./student.model";
 
-const createStudentIntoDb = async (studentData: TStudent) => {
-  // if (await StudentModel.isStudentExist(studentData.id)) {
-  //   throw new Error("Student id already exist!");
-  // }
-  // const result = await StudentModel.create(studentData);
-
-  // using custom instance method
-  const student = new StudentModel(studentData);
-  if (await student.isStudentExistByInstanceMethod()) {
-    throw new Error("Student id already exist!");
-  }
-  const result = await student.save();
-
-  return result;
-};
-
 const countStudentFromDb = async () => {
   const result = await StudentModel.countDocuments({
     isDeleted: { $ne: true },
@@ -40,7 +24,7 @@ const deleteStudentsFromDb = async (id: string) => {
 };
 
 export const StudentService = {
-  createStudentIntoDb,
+  // createStudentIntoDb,
   getStudentsFromDb,
   getSingleStudentsFromDb,
   deleteStudentsFromDb,

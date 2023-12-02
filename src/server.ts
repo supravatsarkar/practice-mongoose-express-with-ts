@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import app from "./app";
+import app from "./app/app";
 import config from "./app/config";
 console.log("config:", config);
 

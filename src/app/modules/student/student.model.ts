@@ -1,6 +1,5 @@
 import validator from "validator";
 import { Schema, model } from "mongoose";
-import bcrypt from "bcrypt";
 import {
   TGuardian,
   TLocalGuardian,
@@ -8,7 +7,6 @@ import {
   TStudentModel,
   TUserName,
 } from "./student.interface";
-import config from "../../config";
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -89,7 +87,12 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
       required: true,
       unique: true,
     },
-    password: { type: String, required: true },
+    user: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      unique: true,
+      ref: "User",
+    },
     name: {
       type: userNameSchema,
       required: true,
@@ -159,13 +162,14 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
 
 // hooks/middleware
 
-studentSchema.pre("save", async function () {
-  // console.log("pre document hooks:", this);
-  this.password = await bcrypt.hash(
-    this.password,
-    Number(config.bcrypt_salt_round),
-  );
-});
+// studentSchema.pre("save", async function () {
+//   console.log("pre save hooks:", Number(config.bcrypt_salt_round));
+//   console.log("pre save hooks:", this);
+//   this.password = await bcrypt.hash(
+//     this.password,
+//     Number(config.bcrypt_salt_round),
+//   );
+// });
 // studentSchema.post("save", function () {
 //   console.log("post document hooks:", this);
 // });
