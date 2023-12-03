@@ -36,25 +36,33 @@ const localGuardianSchema = z.object({
   contactNo: z.string().min(1),
   address: z.string().min(1),
 });
-const studentValidationSchema = z.object({
-  id: z.string().min(1),
-  password: z.string().min(4).max(20),
-  name: userNameSchema,
-  gender: z.enum(["male", "female", "other"]).refine(v => v !== undefined, {
-    message: "Gender is required",
+const createStudentValidationSchema = z.object({
+  body: z.object({
+    password: z
+      .string({
+        invalid_type_error: "Password must be a string",
+      })
+      .max(20, { message: "Password can not be grater than 20 characters" })
+      .optional(),
+    student: z.object({
+      name: userNameSchema,
+      gender: z.enum(["male", "female", "other"]).refine(v => v !== undefined, {
+        message: "Gender is required",
+      }),
+      dateOfBirth: z.string().min(1),
+      email: z.string().email(),
+      contactNo: z.string().min(1),
+      emergencyContactNo: z.string().min(1),
+      bloodGroup: z
+        .enum(["A", "B", "AB", "O", "-A", "-B", "-AB", "-O"])
+        .nullable(),
+      presentAddress: z.string().min(1),
+      permanentAddress: z.string().min(1),
+      guardian: guardianSchema,
+      localGuardian: localGuardianSchema,
+      profileImg: z.string().nullable(),
+    }),
   }),
-  dateOfBirth: z.string().min(1),
-  email: z.string().email(),
-  contactNo: z.string().min(1),
-  emergencyContactNo: z.string().min(1),
-  bloodGroup: z.enum(["A", "B", "AB", "O", "-A", "-B", "-AB", "-O"]).nullable(),
-  presentAddress: z.string().min(1),
-  permanentAddress: z.string().min(1),
-  guardian: guardianSchema,
-  localGuardian: localGuardianSchema,
-  profileImg: z.string().nullable(),
-  isActive: z.enum(["active", "block"]).default("active"),
-  isDeleted: z.boolean().default(false),
 });
 
-export const StudentValidation2 = { studentValidationSchema };
+export const StudentValidation = { createStudentValidationSchema };

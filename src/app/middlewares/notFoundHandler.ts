@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
+import { RequestHandler } from "express";
 
-const notFoundHandler = (req: Request, res: Response) => {
+const notFoundHandler: RequestHandler = (req, res) => {
   // const error = new Error();
   // error.message = "Page not found!";
   // error.statusCode = 404;

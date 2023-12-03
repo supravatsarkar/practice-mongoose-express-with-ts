@@ -12,7 +12,7 @@ const createStudentIntoDb = async (password: string, studentData: TStudent) => {
   user.password = password || (config.default_password as string);
 
   // set generated id
-  user.id = "20200202443";
+  user.id = Date.now().toString();
 
   // set role
   user.role = "student";
@@ -20,7 +20,7 @@ const createStudentIntoDb = async (password: string, studentData: TStudent) => {
   //other user property by default save
 
   const result = await UserModel.create(user);
-
+  // console.log({ studentData });
   if (result._id && result.id) {
     studentData.id = result.id;
     studentData.user = result._id;

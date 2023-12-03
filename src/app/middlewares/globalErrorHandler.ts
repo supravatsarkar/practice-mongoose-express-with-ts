@@ -9,6 +9,7 @@ const globalErrorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
+  console.log("Global Error Handler=>>", error);
   const statusCode = error.statusCode || 500;
   const message =
     error.customMessage || error.message || "Something went wrong!";
@@ -16,6 +17,7 @@ const globalErrorHandler = (
     success: false,
     message,
     error: error,
+    stack: error.stack,
   });
 };
 
