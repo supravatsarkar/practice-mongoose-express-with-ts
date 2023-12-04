@@ -60,7 +60,8 @@ const createStudentValidationSchema = z.object({
       permanentAddress: z.string().min(1),
       guardian: guardianSchema,
       localGuardian: localGuardianSchema,
-      profileImg: z.string().nullable(),
+      profileImg: z.string().optional(),
+      academicSemester: z.string(),
     }),
   }),
 });

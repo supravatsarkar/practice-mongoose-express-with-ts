@@ -106,7 +106,7 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
       required: [true, "gender is required..."],
     },
     dateOfBirth: {
-      type: String,
+      type: Date,
       required: true,
     },
     email: {
@@ -116,6 +116,7 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
         validator: (v: string) => validator.isEmail(v),
         message: "{VALUE} must be a valid email id.",
       },
+      unique: true,
     },
     contactNo: {
       type: String,
@@ -142,10 +143,10 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
     profileImg: {
       type: String,
     },
-    isActive: {
-      type: String,
-      enum: ["active", "block"],
-      default: "active",
+    academicSemester: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "AcademicSemester",
     },
     isDeleted: {
       type: Boolean,
@@ -157,6 +158,7 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
     toJSON: {
       virtuals: true,
     },
+    timestamps: true,
   },
 );
 
