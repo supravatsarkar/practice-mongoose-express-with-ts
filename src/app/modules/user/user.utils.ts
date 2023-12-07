@@ -1,6 +1,7 @@
+import { Types } from "mongoose";
 import { TAcademicSemester } from "../academicSemester/academicSemester.interface";
 import StudentModel from "../student/student.model";
-const getLastStudentId = async (academicSemesterId: string) => {
+const getLastStudentId = async (academicSemesterId: Types.ObjectId) => {
   const lastStudent = await StudentModel.find(
     { academicSemester: academicSemesterId },
     { _id: 0, id: 1 },
@@ -11,7 +12,9 @@ const getLastStudentId = async (academicSemesterId: string) => {
   return lastStudentId?.id.substring(6) || undefined;
 };
 export const generateStudentId = async (
-  payload: TAcademicSemester & { _id: string },
+  payload: TAcademicSemester & {
+    _id: Types.ObjectId;
+  },
 ) => {
   const currentId =
     (await getLastStudentId(payload._id)) || (0).toString().padStart(4, "0");

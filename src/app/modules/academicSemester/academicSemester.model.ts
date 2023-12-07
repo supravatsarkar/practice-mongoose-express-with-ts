@@ -6,6 +6,8 @@ import {
   ACADEMIC_SEMESTER_NAME,
   MONTHS,
 } from "./academicSemester.const";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status-codes";
 
 const academicSemesterSchema = new Schema(
   {
@@ -48,7 +50,7 @@ academicSemesterSchema.pre("save", async function (next) {
     name: this.name,
   });
   if (isAcademicSemesterExist) {
-    throw new Error("Semester already exist!");
+    throw new AppError(httpStatus.BAD_REQUEST, "Semester already exist!");
   }
   next();
 });
@@ -84,7 +86,7 @@ academicSemesterSchema.pre(
       _id: { $ne: thisDoc._id },
     });
     if (isAcademicSemesterExist) {
-      throw new Error("Semester already exist!");
+      throw new AppError(httpStatus.BAD_REQUEST, "Semester already exist!");
     }
     next();
   },

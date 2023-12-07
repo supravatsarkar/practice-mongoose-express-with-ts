@@ -1,4 +1,3 @@
-import { TStudent } from "./student.interface";
 import StudentModel from "./student.model";
 
 const countStudentFromDb = async () => {
@@ -8,11 +7,16 @@ const countStudentFromDb = async () => {
   return result;
 };
 const getStudentsFromDb = async () => {
-  const result = await StudentModel.find();
+  const result = await StudentModel.find()
+    .populate("academicSemester")
+    .populate({ path: "academicDepartment", populate: "academicFaculty" });
   return result;
 };
 const getSingleStudentsFromDb = async (id: string) => {
-  const result = await StudentModel.aggregate([{ $match: { id } }]);
+  // const result = await StudentModel.aggregate([{ $match: { id } }]);
+  const result = await StudentModel.findOne({ id })
+    .populate("academicSemester")
+    .populate({ path: "academicDepartment", populate: "academicFaculty" });
   return result;
 };
 const deleteStudentsFromDb = async (id: string) => {
