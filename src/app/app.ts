@@ -4,6 +4,7 @@ import cors from "cors";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
 import notFoundHandler from "./middlewares/notFoundHandler";
 import router from "./router";
+import sendResponse from "./utils/sendResponse";
 const app: Application = express();
 
 app.use(express.json());
@@ -12,8 +13,17 @@ app.use(cors());
 app.use("/api/v1", router);
 
 app.get("/", (req: Request, res: Response) => {
-  const a = 10;
-  res.send(a);
+  sendResponse(res, {
+    success: true,
+    data: null,
+    message: "Server is running",
+    statusCode: 200,
+  });
+});
+app.get("/test", (req: Request, res: Response) => {
+  // Promise.reject("TEst");
+  console.log(req.query);
+  res.json(req.query);
 });
 
 app.use(globalErrorHandler);

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import config from "../../config";
 import AppError from "../../errors/AppError";
 import { AcademicDepartmentModel } from "../academicDepartment/academicDepartment.model";
@@ -45,28 +46,27 @@ const createStudentIntoDb = async (password: string, studentData: TStudent) => {
 
   // set role
   user.role = "student";
-
-  //other user property by default save
-
-  const result = await UserModel.create(user);
-  // console.log({ studentData });
-  if (result._id && result.id) {
+  const session = await mongoose.startSession(); // create session
+  session.startTransaction(); // start transaction
+  try {
+    const [result] = await UserModel.create([user], { session });
+    // throw new AppError(httpStatus.BAD_REQUEST, "Test Student Creation Failed!");
+    // console.log({ studentData });
+    if (!result._id && !result.id) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Student Creation Failed!");
+    }
     studentData.id = result.id;
     studentData.user = result._id;
-    const newStudent = await StudentModel.create(studentData);
+    const [newStudent] = await StudentModel.create([studentData], { session });
+    await session.commitTransaction();
+    await session.endSession();
     return newStudent;
-  } else {
-    throw new AppError(httpStatus.BAD_REQUEST, "Student Creation Failed!");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
   }
-
-  // using custom instance method
-  // const student = new StudentModel(studentData);
-  // if (await student.isStudentExistByInstanceMethod()) {
-  //   throw new AppError(httpStatus.BAD_REQUEST,"Student id already exist!");
-  // }
-  // const result = await student.save();
-
-  //   return result;
 };
 
 export const UserService = {

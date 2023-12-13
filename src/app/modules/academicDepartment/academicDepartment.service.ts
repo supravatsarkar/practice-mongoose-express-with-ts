@@ -20,7 +20,7 @@ const createAcademicDepartmentIntoDB = async (payload: TAcademicDepartment) => {
 };
 
 const getAllAcademicDepartmentFromDB = async () => {
-  throw new AppError(400, "Test Error");
+  // throw new AppError(400, "Test Error");
   return await AcademicDepartmentModel.find().populate("academicFaculty");
 };
 const getSingleAcademicDepartmentByIdFromDB = async (
