@@ -103,7 +103,7 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
         values: ["male", "female", "other"],
         message: "{VALUE} is not accepted",
       },
-      required: [true, "gender is required..."],
+      required: [true, "gender is required"],
     },
     dateOfBirth: {
       type: Date,
@@ -193,17 +193,17 @@ studentSchema.pre("aggregate", function (next) {
 });
 
 studentSchema.virtual("fullName").get(function () {
-  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
+  return `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`;
 });
 
 // creating custom static method
 studentSchema.statics.isStudentExist = async function (id: string) {
-  return StudentModel.findOne({ id });
+  return StudentModel.findOne({ id, isDeleted: { $ne: true } });
 };
 
 // creating custom instance method
 studentSchema.methods.isStudentExistByInstanceMethod = async function () {
-  return await StudentModel.findOne({ id: this.id });
+  return await StudentModel.findOne({ id: this.id, isDeleted: { $ne: true } });
 };
 const StudentModel = model<TStudent, TStudentModel>("Student", studentSchema);
 

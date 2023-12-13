@@ -7,8 +7,9 @@ import catchAsync from "../../utils/catchAsync";
 // import { StudentValidation2 } from "./student.jod.validation";
 
 const getStudents = catchAsync(async (req, res) => {
+  // console.log(req.query);
   const count = await StudentService.countStudentFromDb();
-  const result = await StudentService.getStudentsFromDb();
+  const result = await StudentService.getStudentsFromDb(req.query);
   return sendResponse(res, {
     success: true,
     message: "Successfully retrieve students",
@@ -22,6 +23,17 @@ const getSingleStudent = catchAsync(async (req, res) => {
   return sendResponse(res, {
     success: true,
     message: "Successfully retrieve student data",
+    statusCode: httpStatus.OK,
+    data: result,
+  });
+});
+const updateSingleStudent = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const { student } = req.body;
+  const result = await StudentService.updateSingleStudentIntoDb(id, student);
+  return sendResponse(res, {
+    success: true,
+    message: "Successfully updated student data",
     statusCode: httpStatus.OK,
     data: result,
   });
@@ -41,4 +53,5 @@ export const StudentController = {
   getStudents,
   getSingleStudent,
   deleteStudent,
+  updateSingleStudent,
 };
