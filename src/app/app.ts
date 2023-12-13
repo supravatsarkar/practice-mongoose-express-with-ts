@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import express, { Application, Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
 import notFoundHandler from "./middlewares/notFoundHandler";
@@ -9,7 +9,12 @@ const app: Application = express();
 
 app.use(express.json());
 app.use(cors());
-
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log("Body:", req.body);
+  console.log("Params:", req.params);
+  console.log("Query:", req.query);
+  next();
+});
 app.use("/api/v1", router);
 
 app.get("/", (req: Request, res: Response) => {

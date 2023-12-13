@@ -7,8 +7,12 @@ import { TStudent } from "../student/student.interface";
 import StudentModel from "../student/student.model";
 import { TUser } from "./user.interface";
 import UserModel from "./user.model";
-import { generateStudentId } from "./user.utils";
+import { generateFacultyId, generateStudentId } from "./user.utils";
 import httpStatus from "http-status-codes";
+import { TFaculty } from "../faculty/faculty.interface";
+import bcrypt from "bcrypt";
+import FacultyModel from "../faculty/faculty.model";
+import { AcademicFacultyModel } from "../academicFaculty/academicFaculty.model";
 
 const createStudentIntoDb = async (password: string, studentData: TStudent) => {
   // create a user object
@@ -16,6 +20,10 @@ const createStudentIntoDb = async (password: string, studentData: TStudent) => {
 
   //  set password if password provided otherwise use default password
   user.password = password || (config.default_password as string);
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_round),
+  );
 
   const isStudentEmailExist = await StudentModel.findOne({
     email: studentData.email,
@@ -69,6 +77,65 @@ const createStudentIntoDb = async (password: string, studentData: TStudent) => {
   }
 };
 
+const createFacultyIntoDb = async (payload: Partial<TUser & TFaculty>) => {
+  const isEmailExist = await FacultyModel.findOne({ email: payload.email });
+  if (isEmailExist)
+    throw new AppError(httpStatus.BAD_REQUEST, "Email already exist");
+
+  if (!mongoose.isValidObjectId(payload.academicDepartment))
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Invalid Academic Department ID",
+    );
+  const academicDepartment = await AcademicDepartmentModel.findById(
+    payload.academicDepartment,
+  );
+  if (!academicDepartment)
+    throw new AppError(httpStatus.BAD_REQUEST, "Academic Department Not Exist");
+  if (
+    academicDepartment?.academicFaculty?.toString() !==
+    payload?.academicFaculty?.toString()
+  ) {
+    // console.log(academicDepartment.academicFaculty.toString());
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Academic Faculty is not associate with Academic Department",
+    );
+  }
+  if (
+    !mongoose.isValidObjectId(payload.academicFaculty) ||
+    !(await AcademicFacultyModel.findById(payload.academicFaculty))
+  )
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid Academic Faculty ID");
+
+  payload.password = await bcrypt.hash(
+    payload.password as string,
+    Number(config.bcrypt_salt_round),
+  );
+  payload.id = await generateFacultyId(); // set generated id
+  payload.role = "faculty"; // set role
+  payload.status = "in-progress"; // set initial status
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const [newUser] = await UserModel.create([payload], { session });
+    if (newUser._id) {
+      payload.user = newUser._id;
+      const [newFaculty] = await FacultyModel.create([payload], { session });
+      await session.commitTransaction();
+      await session.endSession();
+      return newFaculty;
+    } else {
+      throw new AppError(httpStatus.BAD_REQUEST, "Faculty creation failed!");
+    }
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
+};
+
 export const UserService = {
   createStudentIntoDb,
+  createFacultyIntoDb,
 };

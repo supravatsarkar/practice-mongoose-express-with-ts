@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import { TAcademicSemester } from "../academicSemester/academicSemester.interface";
 import StudentModel from "../student/student.model";
+import FacultyModel from "../faculty/faculty.model";
 const getLastStudentId = async (academicSemesterId: Types.ObjectId) => {
   const lastStudent = await StudentModel.find(
     { academicSemester: academicSemesterId },
@@ -22,4 +23,20 @@ export const generateStudentId = async (
   studentId = studentId.toString().padStart(4, "0");
   studentId = `${payload.year}${payload.code}${studentId}`;
   return studentId;
+};
+
+export const generateFacultyId = async () => {
+  const lastFaculty = await FacultyModel.findOne()
+    .sort({
+      createdAt: -1,
+    })
+    .lean();
+  if (!lastFaculty) {
+    return "F-0001";
+  }
+  const id = lastFaculty.id.substring(2);
+  console.log({ id });
+  let newId: number | string = Number(id) + 1;
+  newId = "F-" + newId.toString().padStart(4, "0");
+  return newId;
 };
