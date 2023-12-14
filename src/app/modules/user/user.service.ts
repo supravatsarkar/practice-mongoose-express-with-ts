@@ -7,12 +7,18 @@ import { TStudent } from "../student/student.interface";
 import StudentModel from "../student/student.model";
 import { TUser } from "./user.interface";
 import UserModel from "./user.model";
-import { generateFacultyId, generateStudentId } from "./user.utils";
+import {
+  generateAdminId,
+  generateFacultyId,
+  generateStudentId,
+} from "./user.utils";
 import httpStatus from "http-status-codes";
 import { TFaculty } from "../faculty/faculty.interface";
 import bcrypt from "bcrypt";
 import FacultyModel from "../faculty/faculty.model";
 import { AcademicFacultyModel } from "../academicFaculty/academicFaculty.model";
+import { AdminModel } from "../admin/admin.model";
+import { TAdmin } from "../admin/admin.interface";
 
 const createStudentIntoDb = async (password: string, studentData: TStudent) => {
   // create a user object
@@ -134,8 +140,40 @@ const createFacultyIntoDb = async (payload: Partial<TUser & TFaculty>) => {
     throw error;
   }
 };
+const createAdminIntoDb = async (payload: Partial<TUser & TAdmin>) => {
+  const isEmailExist = await AdminModel.findOne({ email: payload.email });
+  if (isEmailExist)
+    throw new AppError(httpStatus.BAD_REQUEST, "Email already exist");
+
+  payload.password = await bcrypt.hash(
+    payload.password as string,
+    Number(config.bcrypt_salt_round),
+  );
+  payload.id = await generateAdminId(); // set generated id
+  payload.role = "admin"; // set role
+  payload.status = "in-progress"; // set initial status
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const [newUser] = await UserModel.create([payload], { session });
+    if (newUser._id) {
+      payload.user = newUser._id;
+      const [newAdmin] = await AdminModel.create([payload], { session });
+      await session.commitTransaction();
+      await session.endSession();
+      return newAdmin;
+    } else {
+      throw new AppError(httpStatus.BAD_REQUEST, "Admin creation failed!");
+    }
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
+};
 
 export const UserService = {
   createStudentIntoDb,
   createFacultyIntoDb,
+  createAdminIntoDb,
 };
