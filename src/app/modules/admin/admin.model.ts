@@ -120,7 +120,7 @@ adminSchema.pre("aggregate", function (next) {
 });
 
 adminSchema.statics.isAdminExist = async function (id: string) {
-  const existingAdmin = await AdminModel.findOne({ id });
+  const existingAdmin = await AdminModel.findById(id);
   console.log({ existingAdmin });
   return existingAdmin;
 };

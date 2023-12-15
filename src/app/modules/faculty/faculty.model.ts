@@ -83,7 +83,10 @@ facultySchema.pre("find", function (next) {
 
 facultySchema.statics.isFacultyExist = async function (id: string) {
   console.log({ id });
-  const result = await FacultyModel.findOne({ id, isDelete: { $ne: true } });
+  const result = await FacultyModel.findOne({
+    _id: id,
+    isDelete: { $ne: true },
+  });
   console.log({ result });
   return result;
 };

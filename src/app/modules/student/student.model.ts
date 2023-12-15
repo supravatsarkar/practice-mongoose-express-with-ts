@@ -198,12 +198,15 @@ studentSchema.virtual("fullName").get(function () {
 
 // creating custom static method
 studentSchema.statics.isStudentExist = async function (id: string) {
-  return StudentModel.findOne({ id, isDeleted: { $ne: true } });
+  return StudentModel.findOne({ _id: id, isDeleted: { $ne: true } });
 };
 
 // creating custom instance method
 studentSchema.methods.isStudentExistByInstanceMethod = async function () {
-  return await StudentModel.findOne({ id: this.id, isDeleted: { $ne: true } });
+  return await StudentModel.findOne({
+    _id: this._id,
+    isDeleted: { $ne: true },
+  });
 };
 const StudentModel = model<TStudent, TStudentModel>("Student", studentSchema);
 

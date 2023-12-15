@@ -83,7 +83,7 @@ const getStudentsFromDb = async (query: Record<string, unknown>) => {
 };
 const getSingleStudentsFromDb = async (id: string) => {
   // const result = await StudentModel.aggregate([{ $match: { id } }]);
-  const result = await StudentModel.findOne({ id })
+  const result = await StudentModel.findById(id)
     .populate("academicSemester")
     .populate({ path: "academicDepartment", populate: "academicFaculty" });
   return result;
@@ -115,7 +115,7 @@ const updateSingleStudentIntoDb = async (
   }
   console.log({ updateField });
 
-  return await StudentModel.findOneAndUpdate({ id }, updateField, {
+  return await StudentModel.findByIdAndUpdate(id, updateField, {
     new: true,
     runValidators: true,
   });
@@ -127,8 +127,8 @@ const deleteStudentsFromDb = async (id: string) => {
   console.log("session=>", session);
   session.startTransaction();
   try {
-    const studentRes = await StudentModel.findOneAndUpdate(
-      { id },
+    const studentRes = await StudentModel.findByIdAndUpdate(
+      id,
       { $set: { isDeleted: true } },
       { new: true, session },
     );
@@ -137,8 +137,8 @@ const deleteStudentsFromDb = async (id: string) => {
         httpStatus.REQUEST_TIMEOUT,
         "Student deletion failed! Try Again",
       );
-    const userRes = await UserModel.findOneAndUpdate(
-      { id },
+    const userRes = await UserModel.findByIdAndUpdate(
+      id,
       { $set: { isDeleted: true } },
       { new: true, session },
     );

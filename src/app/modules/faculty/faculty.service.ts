@@ -11,7 +11,7 @@ const getFacultyByIdFromDb = async (id: string) => {
   console.log("isExist", isExist);
   if (!isExist)
     throw new AppError(httpStatus.BAD_REQUEST, "Invalid Faculty ID");
-  const result = await FacultyModel.findOne({ id })
+  const result = await FacultyModel.findById({ id })
     .populate("academicFaculty")
     .populate({ path: "academicDepartment", populate: "academicFaculty" });
   return result;
@@ -56,7 +56,7 @@ const updateFacultyByIdFromDb = async (
   //   }
   console.log({ updateField });
 
-  return await FacultyModel.findOneAndUpdate({ id }, updateField, {
+  return await FacultyModel.findByIdAndUpdate(id, updateField, {
     new: true,
     runValidators: true,
   });
@@ -67,8 +67,8 @@ const deleteFacultyByIdFromDb = async (id: string) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const facultyDelRes = await FacultyModel.findOneAndUpdate(
-      { id },
+    const facultyDelRes = await FacultyModel.findByIdAndUpdate(
+      id,
       { $set: { isDeleted: true } },
       { new: true, session },
     );
@@ -77,8 +77,8 @@ const deleteFacultyByIdFromDb = async (id: string) => {
         httpStatus.REQUEST_TIMEOUT,
         "Faculty deletion failed! Try Again",
       );
-    const userRes = await UserModel.findOneAndUpdate(
-      { id },
+    const userRes = await UserModel.findByIdAndUpdate(
+      id,
       { $set: { isDeleted: true } },
       { new: true, session },
     );

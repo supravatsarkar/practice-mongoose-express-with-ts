@@ -8,10 +8,10 @@ import { ADMIN_SEARCHABLE_FIELDS } from "./admin.constant";
 import { TAdmin } from "./admin.interface";
 
 const getAdminByIdFromDb = async (id: string) => {
-  const isExist = await AdminModel.isAdminExist(id);
-  console.log("isExist", isExist);
-  if (!isExist) throw new AppError(httpStatus.BAD_REQUEST, "Invalid Admin ID");
-  const result = await AdminModel.findOne({ id });
+  const admin = await AdminModel.isAdminExist(id);
+  console.log("is admin exist", admin);
+  if (!admin) throw new AppError(httpStatus.BAD_REQUEST, "Invalid Admin ID");
+  const result = admin;
   return result;
 };
 const getAdminsFromDb = async (query: Record<string, unknown>) => {
@@ -49,7 +49,7 @@ const updateAdminByIdFromDb = async (id: string, payload: Partial<TAdmin>) => {
   //   }
   console.log({ updateField });
 
-  return await AdminModel.findOneAndUpdate({ id }, updateField, {
+  return await AdminModel.findByIdAndUpdate(id, updateField, {
     new: true,
     runValidators: true,
   });
@@ -62,8 +62,8 @@ const deleteAdminByIdFromDb = async (id: string) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const adminDelRes = await AdminModel.findOneAndUpdate(
-      { id },
+    const adminDelRes = await AdminModel.findByIdAndUpdate(
+      id,
       { $set: { isDeleted: true } },
       { new: true, session },
     );
@@ -72,8 +72,8 @@ const deleteAdminByIdFromDb = async (id: string) => {
         httpStatus.REQUEST_TIMEOUT,
         "Admin deletion failed! Try Again",
       );
-    const userRes = await UserModel.findOneAndUpdate(
-      { id },
+    const userRes = await UserModel.findByIdAndUpdate(
+      id,
       { $set: { isDeleted: true } },
       { new: true, session },
     );
