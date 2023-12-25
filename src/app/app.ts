@@ -10,9 +10,9 @@ const app: Application = express();
 app.use(express.json());
 app.use(cors());
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log("Body:", req.body);
-  console.log("Params:", req.params);
-  console.log("Query:", req.query);
+  console.log("REQUEST URL ======>>", req.url);
+  console.log("BODY:", req.body);
+  console.log("QUERY:", req.query);
   next();
 });
 app.use("/api/v1", router);
