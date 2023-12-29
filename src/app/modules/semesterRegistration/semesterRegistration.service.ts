@@ -5,6 +5,8 @@ import httpStatus from "http-status-codes";
 import { SemesterRegistrationModel } from "./semesterRegistration.model";
 import { QueryBuilder } from "../../builder/QueryBuilder";
 import { REGISTRATION_STATUS } from "./semesterRegistration.constance";
+import { OfferedCourseModel } from "../offerdCourse/offeredCourse.model";
+import mongoose from "mongoose";
 
 const createSemesterRegistrationIntoDB = async (
   payload: TSemesterRegistration,
@@ -73,6 +75,46 @@ const updateSemesterRegistrationIntoDB = async (
     new: true,
   });
 };
+const deleteSemesterRegistrationIntoDB = async (id: string) => {
+  const semesterRegistration = await SemesterRegistrationModel.findById(id);
+  if (!semesterRegistration) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Semester Registration not found!",
+    );
+  }
+  if (semesterRegistration.status !== REGISTRATION_STATUS.UPCOMING) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Semester Registration Already ${semesterRegistration.status}`,
+    );
+  }
+  const session = await mongoose.startSession();
+  await session.startTransaction();
+  try {
+    // delete all associate Offered Courses
+    await OfferedCourseModel.deleteMany(
+      {
+        semesterRegistration: id,
+      },
+      {
+        session,
+      },
+    );
+
+    // delete semester registration
+    const result = await SemesterRegistrationModel.findByIdAndDelete(id, {
+      session,
+    });
+    await session.commitTransaction();
+    await session.endSession();
+    return result;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    return error;
+  }
+};
 const getSemesterRegistrationByIdFromDB = async (id: string) => {
   return await SemesterRegistrationModel.findById(id).populate(
     "academicSemester",
@@ -97,4 +139,5 @@ export const SemesterRegistrationService = {
   updateSemesterRegistrationIntoDB,
   getSemesterRegistrationByIdFromDB,
   getSemesterRegistrationsFromDB,
+  deleteSemesterRegistrationIntoDB,
 };
