@@ -1,9 +1,9 @@
 import { Schema, model } from "mongoose";
-import { TUser } from "./user.interface";
+import { TUser, TUserModel } from "./user.interface";
 import bcrypt from "bcrypt";
 import config from "../../config";
 
-const userSchema = new Schema<TUser>(
+const userSchema = new Schema<TUser, TUserModel>(
   {
     id: {
       type: String,
@@ -13,6 +13,10 @@ const userSchema = new Schema<TUser>(
     password: {
       type: String,
       required: true,
+      select: 0,
+    },
+    passwordChangedAt: {
+      type: Date,
     },
     role: {
       type: String,
@@ -48,6 +52,16 @@ userSchema.pre("save", async function () {
   );
 });
 
-const UserModel = model<TUser>("User", userSchema);
+userSchema.statics.isUserExist = function (id: string) {
+  return this.findOne({ id }).select("+password");
+};
+userSchema.statics.isJwtBeforeChangedPassword = function (
+  passwordChangedTimestamp: Date,
+  jwtTimestamp: number,
+) {
+  return new Date(passwordChangedTimestamp).getTime() / 1000 > jwtTimestamp;
+};
+
+const UserModel = model<TUser, TUserModel>("User", userSchema);
 
 export default UserModel;

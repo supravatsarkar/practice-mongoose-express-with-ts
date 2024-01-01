@@ -13,8 +13,10 @@ const getFacultyById = catchAsync(async (req, res) => {
   });
 });
 const getFaculties = catchAsync(async (req, res) => {
+  // console.log(req.user);
+  console.log(req.cookies);
   const result = await FacultyService.getFacultiesFromDb(req.query);
-  console.log("getFaculties=>", result);
+  // console.log("getFaculties=>", result);
   sendResponse(res, {
     success: true,
     message: "Faculties retrieved successfully",

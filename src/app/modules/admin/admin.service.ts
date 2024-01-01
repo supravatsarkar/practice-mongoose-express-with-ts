@@ -67,16 +67,18 @@ const deleteAdminByIdFromDb = async (id: string) => {
       { $set: { isDeleted: true } },
       { new: true, session },
     );
+    console.log({ adminDelRes });
     if (!adminDelRes)
       throw new AppError(
         httpStatus.REQUEST_TIMEOUT,
         "Admin deletion failed! Try Again",
       );
     const userRes = await UserModel.findByIdAndUpdate(
-      id,
+      adminDelRes.user,
       { $set: { isDeleted: true } },
       { new: true, session },
     );
+    console.log({ userRes });
     if (!userRes)
       throw new AppError(
         httpStatus.REQUEST_TIMEOUT,

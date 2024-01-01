@@ -77,6 +77,7 @@ const getStudentsFromDb = async (query: Record<string, unknown>) => {
     .paginate();
   // console.log("queryBuilder=>", queryBuilder);
   const populatedQuery = queryBuilder.modelQuery
+    .populate("user")
     .populate("academicSemester")
     .populate({ path: "academicDepartment", populate: "academicFaculty" });
   return await populatedQuery;
@@ -84,6 +85,7 @@ const getStudentsFromDb = async (query: Record<string, unknown>) => {
 const getSingleStudentsFromDb = async (id: string) => {
   // const result = await StudentModel.aggregate([{ $match: { id } }]);
   const result = await StudentModel.findById(id)
+    .populate("user")
     .populate("academicSemester")
     .populate({ path: "academicDepartment", populate: "academicFaculty" });
   return result;

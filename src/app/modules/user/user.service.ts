@@ -26,10 +26,10 @@ const createStudentIntoDb = async (password: string, studentData: TStudent) => {
 
   //  set password if password provided otherwise use default password
   user.password = password || (config.default_password as string);
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_round),
-  );
+  // user.password = await bcrypt.hash(
+  //   user.password,
+  //   Number(config.bcrypt_salt_round),
+  // );
 
   const isStudentEmailExist = await StudentModel.findOne({
     email: studentData.email,
@@ -145,10 +145,12 @@ const createAdminIntoDb = async (payload: Partial<TUser & TAdmin>) => {
   if (isEmailExist)
     throw new AppError(httpStatus.BAD_REQUEST, "Email already exist");
 
-  payload.password = await bcrypt.hash(
-    payload.password as string,
-    Number(config.bcrypt_salt_round),
-  );
+  console.log("password before=>", payload.password);
+  // payload.password = await bcrypt.hash(
+  //   payload.password as string,
+  //   Number(config.bcrypt_salt_round),
+  // );
+  // console.log("password before=>",  payload.password)
   payload.id = await generateAdminId(); // set generated id
   payload.role = "admin"; // set role
   payload.status = "in-progress"; // set initial status
