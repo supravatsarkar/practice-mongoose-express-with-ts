@@ -3,20 +3,20 @@ import config from "../config";
 
 const sendEmail = async (to: string, subject: string, htmlTemplate: string) => {
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
+    host: config.smtp_host,
+    port: Number(config.smtp_port),
     secure: config.NODE_ENV === "production", // for production value is true otherwise false
     auth: {
       // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-      user: "papus944@gmail.com",
-      pass: "dkro ldor ebsc cnaq",
+      user: config.smtp_user,
+      pass: config.smtp_password,
     },
   });
 
   async function main() {
     // send mail with defined transport object
     const info = await transporter.sendMail({
-      from: "papus944@gmail.com", // sender address
+      from: config.smtp_sender_email, // sender address
       to: to, // list of receivers
       subject: subject, // Subject line
       text: subject, // plain text body
