@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 
 export type TUser = {
   id: string;
+  email: string;
   password: string;
   passwordChangedAt: Date;
   role: "student" | "faculty" | "admin";
