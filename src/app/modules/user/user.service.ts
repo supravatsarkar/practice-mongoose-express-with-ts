@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from "mongoose";
 import config from "../../config";
 import AppError from "../../errors/AppError";
@@ -19,8 +20,14 @@ import FacultyModel from "../faculty/faculty.model";
 import { AcademicFacultyModel } from "../academicFaculty/academicFaculty.model";
 import { AdminModel } from "../admin/admin.model";
 import { TAdmin } from "../admin/admin.interface";
+import { USER_ROLES } from "./user.const";
+import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 
-const createStudentIntoDb = async (password: string, studentData: TStudent) => {
+const createStudentIntoDb = async (
+  password: string,
+  studentData: TStudent,
+  file: any,
+) => {
   // create a user object
   const user: Partial<TUser> = {};
 
@@ -60,6 +67,7 @@ const createStudentIntoDb = async (password: string, studentData: TStudent) => {
 
   // set role
   user.role = "student";
+  user.email = studentData.email;
   const session = await mongoose.startSession(); // create session
   session.startTransaction(); // start transaction
   try {
@@ -69,8 +77,14 @@ const createStudentIntoDb = async (password: string, studentData: TStudent) => {
     if (!result._id && !result.id) {
       throw new AppError(httpStatus.BAD_REQUEST, "Student Creation Failed!");
     }
+
+    const { secure_url } = (await sendImageToCloudinary(
+      file?.path,
+      studentData.email,
+    )) as Partial<{ secure_url: string }>;
     studentData.id = result.id;
     studentData.user = result._id;
+    studentData.profileImg = secure_url;
     const [newStudent] = await StudentModel.create([studentData], { session });
     await session.commitTransaction();
     await session.endSession();
@@ -83,7 +97,10 @@ const createStudentIntoDb = async (password: string, studentData: TStudent) => {
   }
 };
 
-const createFacultyIntoDb = async (payload: Partial<TUser & TFaculty>) => {
+const createFacultyIntoDb = async (
+  payload: Partial<TUser & TFaculty>,
+  file: any,
+) => {
   const isEmailExist = await FacultyModel.findOne({ email: payload.email });
   if (isEmailExist)
     throw new AppError(httpStatus.BAD_REQUEST, "Email already exist");
@@ -125,8 +142,13 @@ const createFacultyIntoDb = async (payload: Partial<TUser & TFaculty>) => {
   session.startTransaction();
   try {
     const [newUser] = await UserModel.create([payload], { session });
+    const { secure_url } = (await sendImageToCloudinary(
+      file.path,
+      payload.email as string,
+    )) as Partial<{ secure_url: string }>;
     if (newUser._id) {
       payload.user = newUser._id;
+      payload.profileImage = secure_url;
       const [newFaculty] = await FacultyModel.create([payload], { session });
       await session.commitTransaction();
       await session.endSession();
@@ -140,7 +162,10 @@ const createFacultyIntoDb = async (payload: Partial<TUser & TFaculty>) => {
     throw error;
   }
 };
-const createAdminIntoDb = async (payload: Partial<TUser & TAdmin>) => {
+const createAdminIntoDb = async (
+  payload: Partial<TUser & TAdmin>,
+  file: any,
+) => {
   const isEmailExist = await AdminModel.findOne({ email: payload.email });
   if (isEmailExist)
     throw new AppError(httpStatus.BAD_REQUEST, "Email already exist");
@@ -158,8 +183,13 @@ const createAdminIntoDb = async (payload: Partial<TUser & TAdmin>) => {
   session.startTransaction();
   try {
     const [newUser] = await UserModel.create([payload], { session });
+    const { secure_url } = (await sendImageToCloudinary(
+      file.path,
+      payload.email as string,
+    )) as Partial<{ secure_url: string }>;
     if (newUser._id) {
       payload.user = newUser._id;
+      payload.profileImage = secure_url;
       const [newAdmin] = await AdminModel.create([payload], { session });
       await session.commitTransaction();
       await session.endSession();
@@ -173,9 +203,21 @@ const createAdminIntoDb = async (payload: Partial<TUser & TAdmin>) => {
     throw error;
   }
 };
+const getMe = async (role: string, id: string) => {
+  let result = null;
+  if (role === USER_ROLES.admin) {
+    result = await AdminModel.findOne({ id });
+  } else if (role === USER_ROLES.faculty) {
+    result = await FacultyModel.findOne({ id });
+  } else if (role === USER_ROLES.student) {
+    result = await StudentModel.findOne({ id });
+  }
+  return result;
+};
 
 export const UserService = {
   createStudentIntoDb,
   createFacultyIntoDb,
   createAdminIntoDb,
+  getMe,
 };
