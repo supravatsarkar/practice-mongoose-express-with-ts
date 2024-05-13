@@ -14,7 +14,12 @@ export const auth = (...userRoles: TUserRole[]) => {
       throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorize!");
     }
 
-    const decode = jwt.verify(accessToken, config.jwt_access_secret as string);
+    let decode;
+    try {
+      decode = jwt.verify(accessToken, config.jwt_access_secret as string);
+    } catch (error) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorize!");
+    }
     console.log({ decode });
     const decodedPayload = decode as JwtPayload;
     req.user = decodedPayload;

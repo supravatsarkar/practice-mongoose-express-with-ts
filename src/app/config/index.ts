@@ -21,4 +21,6 @@ export default {
   smtp_sender_email: process.env.SMTP_SENDER_EMAIL,
   smtp_user: process.env.SMTP_USER,
   smtp_password: process.env.SMTP_PASSWORD,
+  super_admin_email: process.env.SUPER_ADMIN_EMAIL,
+  super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
 };

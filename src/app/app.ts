@@ -10,7 +10,8 @@ const app: Application = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: ["http://localhost:5717"] }));
+app.use(cors({ origin: ["http://localhost:5173"], credentials: true }));
+// app.use(cors());
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log("REQUEST URL ======>>", req.url);

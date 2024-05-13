@@ -93,7 +93,12 @@ const changePassword = async (
 };
 
 const refreshToken = async (refresh_token: string) => {
-  const decode = jwt.verify(refresh_token, config.jwt_refresh_secret as string);
+  let decode;
+  try {
+    decode = jwt.verify(refresh_token, config.jwt_refresh_secret as string);
+  } catch (error) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorize!");
+  }
   console.log({ decode });
   const decodedPayload = decode as JwtPayload;
 
