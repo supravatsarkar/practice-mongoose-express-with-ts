@@ -6,12 +6,12 @@ const seedSuperAdmin = async () => {
     id: "0001",
     email: config.super_admin_email,
     password: config.super_admin_password,
-    role: "super-admin",
+    role: "superAdmin",
     status: "in-progress",
     needPasswordChanged: false,
     isDeleted: false,
   };
-  const isSuperAdminExist = await UserModel.findOne({ role: "super-admin" });
+  const isSuperAdminExist = await UserModel.findOne({ role: "superAdmin" });
   console.log("isSuperAdminExist=>", isSuperAdminExist);
   if (!isSuperAdminExist) {
     const superAdmin = await UserModel.create(superAdminData);
