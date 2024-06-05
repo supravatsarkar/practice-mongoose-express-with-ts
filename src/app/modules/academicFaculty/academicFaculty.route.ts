@@ -8,7 +8,7 @@ import { USER_ROLES } from "../user/user.const";
 const router = Router();
 router.post(
   "/create-academic-faculty",
-  auth(USER_ROLES.admin),
+  auth(USER_ROLES.admin, USER_ROLES.superAdmin),
   validateRequest(
     AcademicFacultyValidation.createAcademicFacultyValidationSchema,
   ),

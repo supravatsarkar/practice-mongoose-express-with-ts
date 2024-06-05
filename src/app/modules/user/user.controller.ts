@@ -8,8 +8,8 @@ const createStudent = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body;
   console.log("req.file", req.file);
   console.log("req.body", req.body);
-  console.log("req.body.password", req.body.password);
-  console.log("req.body.student", req.body.student);
+  // console.log("req.body.password", req.body.password);
+  // console.log("req.body.student", req.body.student);
   const result = await UserService.createStudentIntoDb(
     password,
     studentData,

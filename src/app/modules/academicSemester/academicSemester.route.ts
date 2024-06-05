@@ -8,7 +8,7 @@ import { USER_ROLES } from "../user/user.const";
 const router = Router();
 router.post(
   "/create-academic-semester",
-  auth(USER_ROLES.admin),
+  auth(USER_ROLES.admin, USER_ROLES.superAdmin),
   validateRequest(
     AcademicSemesterValidation.createAcademicSemesterValidationSchema,
   ),
@@ -16,13 +16,13 @@ router.post(
 );
 router.get(
   "/",
-  auth(USER_ROLES.admin),
+  auth(USER_ROLES.admin, USER_ROLES.superAdmin),
   AcademicSemesterController.getAllAcademicSemester,
 );
 router.get("/:id", AcademicSemesterController.getAcademicSemesterById);
 router.patch(
   "/:id",
-  auth(USER_ROLES.admin),
+  auth(USER_ROLES.admin, USER_ROLES.superAdmin),
   validateRequest(
     AcademicSemesterValidation.updateAcademicSemesterValidationSchema,
   ),

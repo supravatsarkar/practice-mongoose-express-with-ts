@@ -62,6 +62,7 @@ const createStudentIntoDb = async (
       "Academic Department does not exist!",
     );
   }
+  studentData.academicFaculty = academicDepartment.academicFaculty;
   // set generated id
   user.id = await generateStudentId(academicSemester);
 
@@ -78,13 +79,17 @@ const createStudentIntoDb = async (
       throw new AppError(httpStatus.BAD_REQUEST, "Student Creation Failed!");
     }
 
-    const { secure_url } = (await sendImageToCloudinary(
-      file?.path,
-      studentData.email,
-    )) as Partial<{ secure_url: string }>;
+    if (file) {
+      const { secure_url } = await sendImageToCloudinary(
+        file?.path,
+        studentData.email,
+      );
+      studentData.profileImg = secure_url;
+    }
+
     studentData.id = result.id;
     studentData.user = result._id;
-    studentData.profileImg = secure_url;
+
     const [newStudent] = await StudentModel.create([studentData], { session });
     await session.commitTransaction();
     await session.endSession();
@@ -142,13 +147,17 @@ const createFacultyIntoDb = async (
   session.startTransaction();
   try {
     const [newUser] = await UserModel.create([payload], { session });
-    const { secure_url } = (await sendImageToCloudinary(
-      file.path,
-      payload.email as string,
-    )) as Partial<{ secure_url: string }>;
+    if (file) {
+      const { secure_url } = await sendImageToCloudinary(
+        file.path,
+        payload.email as string,
+      );
+      payload.profileImage = secure_url;
+    }
+
     if (newUser._id) {
       payload.user = newUser._id;
-      payload.profileImage = secure_url;
+
       const [newFaculty] = await FacultyModel.create([payload], { session });
       await session.commitTransaction();
       await session.endSession();
@@ -183,13 +192,16 @@ const createAdminIntoDb = async (
   session.startTransaction();
   try {
     const [newUser] = await UserModel.create([payload], { session });
-    const { secure_url } = (await sendImageToCloudinary(
-      file.path,
-      payload.email as string,
-    )) as Partial<{ secure_url: string }>;
+    if (file) {
+      const { secure_url } = await sendImageToCloudinary(
+        file.path,
+        payload.email as string,
+      );
+      payload.profileImage = secure_url;
+    }
     if (newUser._id) {
       payload.user = newUser._id;
-      payload.profileImage = secure_url;
+
       const [newAdmin] = await AdminModel.create([payload], { session });
       await session.commitTransaction();
       await session.endSession();
