@@ -14,11 +14,13 @@ app.use(cors({ origin: ["http://localhost:5173"], credentials: true }));
 // app.use(cors());
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log("REQUEST URL ======>>", req.url);
+  console.log("REQUEST======>>", req.method, req.url);
   console.log("BODY:", req.body);
   console.log("QUERY:", req.query);
   next();
 });
+// app.use("static", express.static(`${process.cwd()}/src/app/public`));
+app.use("/static", express.static(`public`));
 app.use("/api/v1", router);
 
 app.get("/", (req: Request, res: Response) => {
