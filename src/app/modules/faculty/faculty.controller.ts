@@ -13,10 +13,7 @@ const getFacultyById = catchAsync(async (req, res) => {
   });
 });
 const getFaculties = catchAsync(async (req, res) => {
-  // console.log(req.user);
-  console.log(req.cookies);
   const result = await FacultyService.getFacultiesFromDb(req.query);
-  // console.log("getFaculties=>", result);
   sendResponse(res, {
     success: true,
     message: "Faculties retrieved successfully",
@@ -27,7 +24,6 @@ const getFaculties = catchAsync(async (req, res) => {
 const updateFaculty = catchAsync(async (req, res) => {
   const id = req.params.id;
   const result = await FacultyService.updateFacultyByIdFromDb(id, req.body);
-  console.log("getFaculties=>", result);
   sendResponse(res, {
     success: true,
     message: "Faculties updated successfully",
@@ -38,7 +34,6 @@ const updateFaculty = catchAsync(async (req, res) => {
 const deleteFaculty = catchAsync(async (req, res) => {
   const id = req.params.id;
   const result = await FacultyService.deleteFacultyByIdFromDb(id);
-  console.log("getFaculties=>", result);
   sendResponse(res, {
     success: true,
     message: "Faculties deleted successfully",

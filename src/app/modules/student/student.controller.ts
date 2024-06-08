@@ -2,19 +2,14 @@ import { StudentService } from "./student.service";
 import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
 import catchAsync from "../../utils/catchAsync";
-// import Joi from "joi";
-// import { StudentValidation } from "./student.joi.validation";
-// import { StudentValidation2 } from "./student.jod.validation";
 
 const getStudents = catchAsync(async (req, res) => {
-  // console.log(req.query);
-  const count = await StudentService.countStudentFromDb();
   const result = await StudentService.getStudentsFromDb(req.query);
   return sendResponse(res, {
     success: true,
     message: "Successfully retrieve students",
     statusCode: httpStatus.OK,
-    data: { count, result },
+    data: result,
   });
 });
 const getSingleStudent = catchAsync(async (req, res) => {

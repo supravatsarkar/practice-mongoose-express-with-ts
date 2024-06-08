@@ -33,7 +33,6 @@ const createFacultyValidationSchema = z.object({
       .trim(),
     presentAddress: z.string(),
     permanentAddress: z.string(),
-    profileImage: z.string().optional(),
     academicDepartment: z.string(),
     academicFaculty: z.string(),
   }),

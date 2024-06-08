@@ -36,12 +36,10 @@ const userSchema = new Schema<TUser, TUserModel>(
     },
     needPasswordChanged: {
       type: Boolean,
-      // required: true,
       default: true,
     },
     isDeleted: {
       type: Boolean,
-      // required: true,
       default: false,
     },
   },

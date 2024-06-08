@@ -8,7 +8,6 @@ import UserModel from "../user/user.model";
 
 const getFacultyByIdFromDb = async (id: string) => {
   const isExist = await FacultyModel.isFacultyExist(id);
-  console.log("isExist", isExist);
   if (!isExist)
     throw new AppError(httpStatus.BAD_REQUEST, "Invalid Faculty ID");
   const result = await FacultyModel.findById({ id })
@@ -23,11 +22,17 @@ const getFacultiesFromDb = async (query: Record<string, unknown>) => {
     .sort()
     .filter()
     .fields();
+  const countQueryBuilder = new QueryBuilder(FacultyModel.find(), query)
+    .search(["name", "email", "contactNo"])
+    .filter();
   const result = await queryBuilder.modelQuery.populate([
     "academicFaculty",
     "academicDepartment",
   ]);
-  return result;
+  return {
+    count: await countQueryBuilder.modelQuery.countDocuments(),
+    faculties: result,
+  };
 };
 const updateFacultyByIdFromDb = async (
   id: string,

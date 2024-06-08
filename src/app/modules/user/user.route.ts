@@ -10,26 +10,11 @@ import { fileUpload } from "../../middlewares/fileUpload";
 
 const router = express.Router();
 
-// interface TCustomError extends Error {
-//     customMessage: string;
-//     statusCode: number;
-//   }
-//   class CustomError extends Error {
-//     customMessage: string;
-//     statusCode: number;
-//     constructor(message: string, customMessage: string, statusCode: number) {
-//       super(message);
-//       this.customMessage = customMessage;
-//       this.statusCode = statusCode;
-//     }
-//   }
-
 router.post(
   "/create-student",
-  auth(USER_ROLES.admin, USER_ROLES.superAdmin),
+  auth(USER_ROLES.admin, USER_ROLES.superAdmin, USER_ROLES.faculty),
   fileUpload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
-    // console.log("req.body", req.body);
     req.body = JSON.parse(req.body.data);
     next();
   },
@@ -38,7 +23,7 @@ router.post(
 );
 router.post(
   "/create-faculty",
-  auth(USER_ROLES.admin),
+  auth(USER_ROLES.admin, USER_ROLES.superAdmin),
   fileUpload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -60,7 +45,12 @@ router.post(
 );
 router.get(
   "/me",
-  auth(USER_ROLES.admin, USER_ROLES.faculty, USER_ROLES.student),
+  auth(
+    USER_ROLES.superAdmin,
+    USER_ROLES.admin,
+    USER_ROLES.faculty,
+    USER_ROLES.student,
+  ),
   UserController.getMe,
 );
 

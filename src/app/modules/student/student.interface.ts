@@ -55,9 +55,3 @@ export interface TStudentModel
     id: string,
   ): Promise<HydratedDocument<TStudent, TStudentMethods> | null>;
 }
-
-// export type TStudentModel = Model<
-//   TStudent,
-//   Record<string, never>,
-//   TStudentMethods
-// >;
