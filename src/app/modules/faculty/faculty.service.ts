@@ -59,7 +59,6 @@ const updateFacultyByIdFromDb = async (
   //       updateField[`guardian.${key}`] = value;
   //     }
   //   }
-  console.log({ updateField });
 
   return await FacultyModel.findByIdAndUpdate(id, updateField, {
     new: true,

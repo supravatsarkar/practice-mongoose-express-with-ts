@@ -34,7 +34,6 @@ const createFacultyValidationSchema = z.object({
     presentAddress: z.string(),
     permanentAddress: z.string(),
     academicDepartment: z.string(),
-    academicFaculty: z.string(),
   }),
 });
 const updateFacultyValidationSchema = z.object({
@@ -67,7 +66,6 @@ const updateFacultyValidationSchema = z.object({
     permanentAddress: z.string().optional(),
     profileImage: z.string().optional().optional(),
     academicDepartment: z.string().optional(),
-    academicFaculty: z.string().optional(),
   }),
 });
 

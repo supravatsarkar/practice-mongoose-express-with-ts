@@ -17,7 +17,6 @@ import httpStatus from "http-status-codes";
 import { TFaculty } from "../faculty/faculty.interface";
 import bcrypt from "bcrypt";
 import FacultyModel from "../faculty/faculty.model";
-import { AcademicFacultyModel } from "../academicFaculty/academicFaculty.model";
 import { AdminModel } from "../admin/admin.model";
 import { TAdmin } from "../admin/admin.interface";
 import { USER_ROLES } from "./user.const";
@@ -114,21 +113,24 @@ const createFacultyIntoDb = async (
   );
   if (!academicDepartment)
     throw new AppError(httpStatus.BAD_REQUEST, "Academic Department Not Exist");
-  if (
-    academicDepartment?.academicFaculty?.toString() !==
-    payload?.academicFaculty?.toString()
-  ) {
-    // console.log(academicDepartment.academicFaculty.toString());
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "Academic Faculty is not associate with Academic Department",
-    );
-  }
-  if (
-    !mongoose.isValidObjectId(payload.academicFaculty) ||
-    !(await AcademicFacultyModel.findById(payload.academicFaculty))
-  )
-    throw new AppError(httpStatus.BAD_REQUEST, "Invalid Academic Faculty ID");
+  // if (
+  //   academicDepartment?.academicFaculty?.toString() !==
+  //   payload?.academicFaculty?.toString()
+  // ) {
+  //   // console.log(academicDepartment.academicFaculty.toString());
+  //   throw new AppError(
+  //     httpStatus.BAD_REQUEST,
+  //     "Academic Faculty is not associate with Academic Department",
+  //   );
+  // }
+  // if (
+  //   !mongoose.isValidObjectId(payload.academicFaculty) ||
+  //   !(await AcademicFacultyModel.findById(payload.academicFaculty))
+  // )
+  //   throw new AppError(httpStatus.BAD_REQUEST, "Invalid Academic Faculty ID");
+
+  // set academic faculty
+  payload.academicFaculty = academicDepartment?.academicFaculty;
 
   payload.password = await bcrypt.hash(
     payload.password as string,
