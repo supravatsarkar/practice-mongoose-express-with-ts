@@ -9,7 +9,7 @@ const router = Router();
 
 router.post(
   "/create-semester-registration",
-  auth(USER_ROLES.admin),
+  auth(USER_ROLES.admin, USER_ROLES.superAdmin),
   validateRequest(
     SemesterRegistrationValidation.createSemesterRegistrationValidationSchema,
   ),
@@ -17,7 +17,7 @@ router.post(
 );
 router.patch(
   "/:id",
-  auth(USER_ROLES.admin),
+  auth(USER_ROLES.admin, USER_ROLES.superAdmin),
   validateRequest(
     SemesterRegistrationValidation.updateSemesterRegistrationValidationSchema,
   ),
@@ -25,7 +25,7 @@ router.patch(
 );
 router.delete(
   "/:id",
-  auth(USER_ROLES.admin),
+  auth(USER_ROLES.admin, USER_ROLES.superAdmin),
   SemesterRegistrationController.deleteSemesterRegistration,
 );
 router.get(

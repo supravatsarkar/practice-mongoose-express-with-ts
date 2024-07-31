@@ -112,13 +112,18 @@ const deleteCourseByIdFromDB = async (id: string) => {
 };
 
 const assignFacultiesWithCourseIntoDB = async (
-  id: string,
+  courseId: string,
   payload: Partial<TCourseFaculties>,
 ) => {
+  const course = await CourseModel.findById(courseId);
+  // console.log("isCourseExist=>", course);
+  if (!course) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Course ID does not exit!");
+  }
   const result = CourseFacultyModel.findByIdAndUpdate(
-    id,
+    courseId,
     {
-      course: id,
+      course: courseId,
       $addToSet: {
         faculties: { $each: payload.faculties },
       },
@@ -129,6 +134,13 @@ const assignFacultiesWithCourseIntoDB = async (
       runValidators: true,
     },
   );
+  return result;
+};
+const getAssignFacultiesWithCourseDB = async (courseId: string) => {
+  // const course = await CourseFacultyModel.findById(courseId);
+  const result = CourseFacultyModel.findOne({
+    course: courseId,
+  }).populate("faculties");
   return result;
 };
 const removeFacultiesWithCourseFromDB = async (
@@ -157,5 +169,6 @@ export const CourseService = {
   updateCourseByIdFromDB,
   deleteCourseByIdFromDB,
   assignFacultiesWithCourseIntoDB,
+  getAssignFacultiesWithCourseDB,
   removeFacultiesWithCourseFromDB,
 };
