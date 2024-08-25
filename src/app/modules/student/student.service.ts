@@ -22,11 +22,11 @@ const getStudentsFromDb = async (query: Record<string, unknown>) => {
     .populate("user")
     .populate("academicSemester")
     .populate({ path: "academicDepartment", populate: "academicFaculty" });
-  const countQuery = new QueryBuilder(StudentModel.find(), query)
-    .search(studentSearchableFields)
-    .filter();
+  // const countQuery = new QueryBuilder(StudentModel.find(), query)
+  //   .search(studentSearchableFields)
+  //   .filter();
   const finalResponse: Record<string, unknown> = {};
-  finalResponse.count = await countQuery.modelQuery.countDocuments();
+  finalResponse.meta = await queryBuilder.totalCount();
   finalResponse.students = await populatedQuery;
   return finalResponse;
 };
