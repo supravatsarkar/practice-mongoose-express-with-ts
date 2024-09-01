@@ -21,18 +21,12 @@ router.patch(
   validateRequest(EnrolledCourseValidation.updateEnrolledCourseMarksSchema),
   EnrolledCourseController.updateEnrolledCourseMarks,
 );
-// router.patch(
-//   "/:id",
-//   auth(USER_ROLES.admin),
-//   validateRequest(OfferedCourseValidation.updateOfferedCourseValidationSchema),
-//   OfferedCourseController.updateOfferedCourse,
-// );
-// router.delete(
-//   "/:id",
-//   auth(USER_ROLES.admin),
-//   OfferedCourseController.deleteOfferedCourse,
-// );
-// router.get("/:id", OfferedCourseController.getSingleOfferedCourse);
+router.get(
+  "/get-my-enrolled-courses",
+  auth(USER_ROLES.student),
+  EnrolledCourseController.getMyEnrolledCourses,
+);
+
 router.get("/", EnrolledCourseController.getEnrolledCourse);
 
 export const EnrolledCourseRoute = router;

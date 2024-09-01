@@ -213,9 +213,30 @@ const getEnrolledCoursesFromDB = async (query: Record<string, unknown>) => {
   const result = await queryBuilder.modelQuery;
   return { meta, result };
 };
+const getMyEnrolledCoursesFromDB = async (
+  studentId: string,
+  query: Record<string, unknown>,
+) => {
+  const student = await StudentModel.findOne({ id: studentId });
+  if (!student) {
+    throw new AppError(httpStatus.NOT_FOUND, "Student not exist!");
+  }
+  const queryBuilder = new QueryBuilder(
+    EnrolledCourseModel.find({ student: student._id }),
+    query,
+  )
+    .fields()
+    .filter()
+    .paginate()
+    .sort();
+  const meta = await queryBuilder.totalCount();
+  const result = await queryBuilder.modelQuery;
+  return { meta, result };
+};
 
 export const EnrolledCourseService = {
   createEnrolledCourseIntoDB,
   updateEnrolledCourseMarksIntoDB,
   getEnrolledCoursesFromDB,
+  getMyEnrolledCoursesFromDB,
 };

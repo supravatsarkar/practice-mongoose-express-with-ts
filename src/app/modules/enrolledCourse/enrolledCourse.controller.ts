@@ -37,7 +37,22 @@ const getEnrolledCourse = catchAsync(async (req, res) => {
     success: true,
     statusCode: httpStatus.OK,
     message: "Enrolled Courses Retrieved Successfully",
-    data: result,
+    meta: result.meta,
+    data: result.result,
+  });
+});
+const getMyEnrolledCourses = catchAsync(async (req, res) => {
+  const studentId = req.user.id;
+  const result = await EnrolledCourseService.getMyEnrolledCoursesFromDB(
+    studentId,
+    req.query,
+  );
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Enrolled Courses Retrieved Successfully",
+    meta: result.meta,
+    data: result.result,
   });
 });
 
@@ -45,4 +60,5 @@ export const EnrolledCourseController = {
   createEnrolledCourse,
   getEnrolledCourse,
   updateEnrolledCourseMarks,
+  getMyEnrolledCourses,
 };
