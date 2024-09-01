@@ -131,7 +131,9 @@ const getSemesterRegistrationsFromDB = async (
     .paginate()
     .sort()
     .fields();
-  return await queryBuilder.modelQuery;
+  const meta = await queryBuilder.totalCount();
+  const result = await queryBuilder.modelQuery;
+  return { meta, result };
 };
 
 export const SemesterRegistrationService = {

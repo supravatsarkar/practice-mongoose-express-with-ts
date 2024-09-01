@@ -25,10 +25,9 @@ const getStudentsFromDb = async (query: Record<string, unknown>) => {
   // const countQuery = new QueryBuilder(StudentModel.find(), query)
   //   .search(studentSearchableFields)
   //   .filter();
-  const finalResponse: Record<string, unknown> = {};
-  finalResponse.meta = await queryBuilder.totalCount();
-  finalResponse.students = await populatedQuery;
-  return finalResponse;
+  const meta = await queryBuilder.totalCount();
+  const result = await populatedQuery;
+  return { meta, result };
 };
 const getSingleStudentsFromDb = async (id: string) => {
   const result = await StudentModel.findById(id)

@@ -22,7 +22,8 @@ const getAdminsFromDb = async (query: Record<string, unknown>) => {
     .filter()
     .fields();
   const result = await queryBuilder.modelQuery;
-  return result;
+  const meta = await queryBuilder.totalCount();
+  return { meta, result };
 };
 const updateAdminByIdFromDb = async (id: string, payload: Partial<TAdmin>) => {
   if (!(await AdminModel.isAdminExist(id)))

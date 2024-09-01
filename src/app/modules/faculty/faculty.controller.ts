@@ -18,7 +18,8 @@ const getFaculties = catchAsync(async (req, res) => {
     success: true,
     message: "Faculties retrieved successfully",
     statusCode: 200,
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 const updateFaculty = catchAsync(async (req, res) => {

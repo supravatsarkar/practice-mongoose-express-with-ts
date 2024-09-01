@@ -6,6 +6,7 @@ import { AcademicDepartmentModel } from "./academicDepartment.model";
 import { AcademicFacultyModel } from "../academicFaculty/academicFaculty.model";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status-codes";
+import { QueryBuilder } from "../../builder/QueryBuilder";
 
 const createAcademicDepartmentIntoDB = async (payload: TAcademicDepartment) => {
   const isAcademicFacultyExist = await AcademicFacultyModel.findById(
@@ -19,9 +20,21 @@ const createAcademicDepartmentIntoDB = async (payload: TAcademicDepartment) => {
   return await AcademicDepartmentModel.create(payload);
 };
 
-const getAllAcademicDepartmentFromDB = async () => {
+const getAllAcademicDepartmentFromDB = async (
+  query: Record<string, unknown>,
+) => {
   // throw new AppError(400, "Test Error");
-  return await AcademicDepartmentModel.find().populate("academicFaculty");
+  const queryBuilder = new QueryBuilder(
+    AcademicDepartmentModel.find().populate("academicFaculty"),
+    query,
+  )
+    .fields()
+    .filter()
+    .paginate()
+    .sort();
+  const meta = await queryBuilder.totalCount();
+  const result = await queryBuilder.modelQuery;
+  return { meta, result };
 };
 const getSingleAcademicDepartmentByIdFromDB = async (
   id: string | Types.ObjectId,

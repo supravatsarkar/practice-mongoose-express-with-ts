@@ -10,7 +10,7 @@ const createCourseIntoDB = async (payload: TCourse) => {
   return await CourseModel.create(payload);
 };
 const getCoursesFromDB = async (query: Record<string, unknown>) => {
-  const queryBuilder = new QueryBuilder(
+  const courseBuilder = new QueryBuilder(
     CourseModel.find().populate("preRequisiteCourses.course"),
     query,
   )
@@ -19,7 +19,9 @@ const getCoursesFromDB = async (query: Record<string, unknown>) => {
     .filter()
     .paginate()
     .fields();
-  return await queryBuilder.modelQuery;
+  const result = await courseBuilder.modelQuery;
+  const meta = await courseBuilder.totalCount();
+  return { meta, result };
 };
 const getCourseByIdFromDB = async (id: string) => {
   return await CourseModel.findById(id).populate("preRequisiteCourses.course");

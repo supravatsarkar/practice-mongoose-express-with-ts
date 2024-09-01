@@ -15,12 +15,15 @@ const createAcademicSemester = catchAsync(async (req, res) => {
   });
 });
 const getAllAcademicSemester = catchAsync(async (req, res) => {
-  const result = await AcademicSemesterService.getAllAcademicSemesterFromDB();
+  const result = await AcademicSemesterService.getAllAcademicSemesterFromDB(
+    req.query,
+  );
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Academic Semesters fetch successfully",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 const getAcademicSemesterById = catchAsync(async (req, res) => {

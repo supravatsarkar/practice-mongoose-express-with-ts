@@ -6,6 +6,7 @@ import { AcademicSemesterModel } from "./academicSemester.model";
 import { Types } from "mongoose";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status-codes";
+import { QueryBuilder } from "../../builder/QueryBuilder";
 
 const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
   if (academicSemesterCodeMapping[payload.name] !== payload.code) {
@@ -14,8 +15,14 @@ const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
   return await AcademicSemesterModel.create(payload);
 };
 
-const getAllAcademicSemesterFromDB = async () => {
-  return await AcademicSemesterModel.find();
+const getAllAcademicSemesterFromDB = async (query: Record<string, unknown>) => {
+  const queryBuilder = new QueryBuilder(AcademicSemesterModel.find(), query)
+    .fields()
+    .paginate()
+    .sort();
+  const result = await queryBuilder.modelQuery;
+  const meta = await queryBuilder.totalCount();
+  return { meta, result };
 };
 const getSingleAcademicSemesterByIdFromDB = async (
   id: string | Types.ObjectId,

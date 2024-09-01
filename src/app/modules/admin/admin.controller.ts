@@ -18,7 +18,8 @@ const getAdmins = catchAsync(async (req, res) => {
     success: true,
     message: "Admin retrieved successfully",
     statusCode: 200,
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 const updateAdmin = catchAsync(async (req, res) => {

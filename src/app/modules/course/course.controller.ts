@@ -28,7 +28,8 @@ const getCourses = catchAsync(async (req, res) => {
     success: true,
     message: "Courses retrieved successfully",
     statusCode: 200,
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 const updateCourse = catchAsync(async (req, res) => {

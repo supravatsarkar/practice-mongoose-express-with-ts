@@ -22,16 +22,17 @@ const getFacultiesFromDb = async (query: Record<string, unknown>) => {
     .sort()
     .filter()
     .fields();
-  const countQueryBuilder = new QueryBuilder(FacultyModel.find(), query)
-    .search(["name", "email", "contactNo"])
-    .filter();
+  // const countQueryBuilder = new QueryBuilder(FacultyModel.find(), query)
+  //   .search(["name", "email", "contactNo"])
+  //   .filter();
   const result = await queryBuilder.modelQuery.populate([
     "academicFaculty",
     "academicDepartment",
   ]);
+  const meta = await queryBuilder.totalCount();
   return {
-    count: await countQueryBuilder.modelQuery.countDocuments(),
-    faculties: result,
+    meta,
+    result,
   };
 };
 const updateFacultyByIdFromDb = async (
